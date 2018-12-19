@@ -1,3 +1,16 @@
+# featrue
+
+* 模型定义（Model.define）
+* 结构映射（prop:map、model.fromJSON、model.toJSON）
+
+* 属性格式化（prop:format）
+
+* 类型转换（prop:type）
+* 数据验证（validate）
+
+
+# use
+
 ```
 // 定义模型
 var User = Model.define('User', {
