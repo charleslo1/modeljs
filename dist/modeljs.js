@@ -4588,7 +4588,7 @@ var ModelBase = function () {
     }
 
     /**
-     * 从 api 数据对象转换为模型数据
+     * 从 api 数据对象转换为模型对象
      * @param  {Object} data api 数据对象
      * @return {Model}      模型对象
      */
@@ -4685,7 +4685,7 @@ var ModelBase = function () {
     }
 
     /**
-     * 从 api 数据集合批量创建模型集合
+     * 从 api 数据对象集合批量创建模型对象集合
      * @param  {Array<Object>} data api 数据集合
      * @return {Array<Model>}       模型对象集合
      */
@@ -4703,9 +4703,9 @@ var ModelBase = function () {
     }
 
     /**
-     * 将模型对象集合批量转换为 api 数据集合
-     * @param  {Array<Model>} data 模型对象集合
-     * @return {Array<Object>}     api 数据集合
+     * 将模型对象集合批量转换为 api 数据对象集合
+     * @param  {Array<Model>} models 模型对象集合
+     * @return {Array<Object>}       api 数据集合
      */
 
   }, {

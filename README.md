@@ -118,6 +118,72 @@ await http.post('/user/addlist', data)
 
 ```
 
+# API
+
+``` js
+import Model from 'modejs-core'
+
+/**
+ * 安装插件
+ * @param  {Object} plugin      插件对象
+ * @param  {Object} options     插件选项
+ */
+Model.use(plugn, options)
+
+/**
+ * 定义模型
+ * @param  {String} name       模型名称
+ * @param  {Object} attributes 模型定义对象
+ * @return {Function}          模型类
+ */
+const ModelClass = Model.define(name, attributes)
+
+/**
+ * 创建模型对象
+ * @param  {Object} values 模型属性值
+ * @return {Model}        模型对象
+ */
+var model = ModelClass.create(values)
+// 等同于
+var model = new ModelClass(values)
+
+/**
+ * 批量创建模型对象
+ * @param  {Array<Object>}  valueSets 模型属性值集合
+ * @return {Array<Model>}             模型集合
+ */
+var models = ModelClass.bulkCreate(valueSets)
+
+/**
+ * 从 api 数据对象转换为模型对象
+ * @param  {Object} data api 数据对象
+ * @return {Model}      模型对象
+ */
+model.fromData(data)
+// 等同于
+var model = ModelClass.fromData(data)
+
+/**
+ * 将模型对象转换为 api 数据对象
+ * @return {Object} api 数据对象
+ */
+var data = model.toData()
+
+/**
+ * 从 api 数据对象集合批量创建模型对象集合
+ * @param  {Array<Object>} data api 数据集合
+ * @return {Array<Model>}       模型对象集合
+ */
+ModelClass.fromDataSet(dataSet)
+
+/**
+ * 将模型对象集合批量转换为 api 数据对象集合
+ * @param  {Array<Model>} models 模型对象集合
+ * @return {Array<Object>}       api 数据集合
+ */
+var dataSet = ModelClass.toDataSet(models)
+```
+
 ![star](https://user-gold-cdn.xitu.io/2018/7/24/164ca9c0e943dcd7?w=240&h=240&f=png&s=41877)
 
 如果对你有用，欢迎 star ^_^
