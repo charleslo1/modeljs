@@ -28,6 +28,7 @@ npm install modeljs-core --save
 ##### 模型定义：User.js
 ``` js
 import Model from 'modeljs-core'
+import http from 'axios'
 
 // 定义模型
 const User = Model.define('User', {
@@ -47,6 +48,18 @@ const User = Model.define('User', {
   }
 })
 
+// 可使用原型扩展自定义方法
+User.prototype.load = async function () {
+  let { data } = await http.get({id: this.id})
+  this.fromData(data)
+  return this
+}
+
+User.prototype.save = async function () {
+  let data = this.toData()
+  return await http.post(data)
+}
+
 export default User
 ```
 
@@ -64,6 +77,14 @@ var user = new User({
 console.log(user.id)            // 100
 console.log(user.name)          // Charles Lo
 console.log(user.companyName)   // XX公司
+
+// 使用自定义方法
+var user = new User({ id: 101 })
+await user.load()
+console.log(user.name)          // 张三
+
+user.name = '李四'
+await user.save()
 ```
 
 ##### 接口数据映射
