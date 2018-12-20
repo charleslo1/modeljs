@@ -50,7 +50,7 @@ const User = Model.define('User', {
 
 // 可使用原型扩展自定义方法
 User.prototype.load = async function () {
-  let { data } = await http.get({id: this.id})
+  let { data } = await http.get(`/user/${this.id}`)
   this.fromData(data)
   return this
 }
@@ -89,6 +89,7 @@ await user.save()
 
 ##### 接口数据映射
 ``` js
+import http from 'axios'
 import User from './User'
 
 // 实例化
