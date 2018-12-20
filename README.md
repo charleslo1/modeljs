@@ -16,7 +16,10 @@ modeljs 是一个简单高效的 JS 数据模型定义库，可以帮助前端�
 # Featrues
 - [x] 轻松定义应用业务模型
 - [x] 支持后端接口数据双向映射
-- [ ] 支持验证插件对模型进行数据验证
+
+# Todo
+- [ ] 模型验证插件（modeljs-validate）
+- [ ] 接口映射插件（modeljs-apimap）
 
 # Install
 ```
