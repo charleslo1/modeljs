@@ -1,6 +1,6 @@
 {
   "name": "modeljs-core",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "简单高效的 JS 数据模型定义库，帮助前后端数据结构轻松解耦",
   "main": "dist/modeljs.js",
   "scripts": {
@@ -13,8 +13,9 @@
     "url": "https://github.com/charleslo1/modeljs.git"
   },
   "keywords": [
-    "wxapp",
-    "cookie"
+    "model",
+    "validate",
+    "api"
   ],
   "author": "Charles Lo",
   "license": "ISC",
