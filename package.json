@@ -1,6 +1,6 @@
 {
   "name": "modeljs-core",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "简单高效的 JS 数据模型定义库，帮助前后端数据结构轻松解耦",
   "main": "dist/modeljs.js",
   "scripts": {

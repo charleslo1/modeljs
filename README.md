@@ -49,7 +49,7 @@ export default User
 ```
 
 ##### 基本使用
-```
+``` js
 import User from './User'
 
 // 实例化
@@ -65,7 +65,7 @@ console.log(user.companyName)   // XX公司
 ```
 
 ##### 接口映射
-```
+``` js
 import User from './User'
 
 // 实例化
