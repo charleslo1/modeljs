@@ -85,6 +85,7 @@ console.log(user.name)          // 张三
 
 user.name = '李四'
 await user.save()
+console.log(user.name)          // 李四
 ```
 
 ##### 接口数据映射
