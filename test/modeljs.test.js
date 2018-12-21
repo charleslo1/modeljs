@@ -25,6 +25,20 @@ describe('modeljs.js', () => {
     assert.equal('Charles Lo', user.name)
   })
 
+  it('Model.create(values)', () => {
+    var obj = { id: 100, name: 'Charles Lo'}
+    var user1 = new User(obj)
+    var user2 = User.create(obj)
+    assert.equal(user1.name, user2.name)
+    assert.notEqual(user1, user2)
+  })
+
+  it('model.$modelize', () => {
+    var user = new User({ id: 100, name: 'Charles Lo'})
+    delete user.$modelize
+    assert.equal(true, user.$modelize)
+  })
+
   it('model.clone()', () => {
     var user = new User({ id: 100, name: 'Charles Lo'})
     var newUser1 = user.clone()
