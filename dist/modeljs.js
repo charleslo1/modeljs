@@ -4537,19 +4537,19 @@ function isPlainObject(value) {
 var isPlainObject_1$1 = isPlainObject;
 
 /**
- * 模型基类
+ * 模型类
  */
 
-var ModelBase = function () {
+var Model$1 = function () {
   /**
    * 模型构造函数
    * @param  {Object} values 模型属性数据
    * @return {[type]}        [description]
    */
-  function ModelBase() {
+  function Model() {
     var values = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    _classCallCheck(this, ModelBase);
+    _classCallCheck(this, Model);
 
     // 对象的实际值
     this._initValues(values);
@@ -4561,7 +4561,7 @@ var ModelBase = function () {
    */
 
 
-  _createClass(ModelBase, [{
+  _createClass(Model, [{
     key: '_initValues',
     value: function _initValues() {
       var _this = this;
@@ -4869,31 +4869,8 @@ var ModelBase = function () {
     }
   }]);
 
-  return ModelBase;
+  return Model;
 }();
-
-/**
- * 模型类
- */
-
-
-var Model$1 = function Model(name, attributes) {
-  _classCallCheck(this, Model);
-
-  var ModelClass = function (_ModelBase) {
-    _inherits(ModelClass, _ModelBase);
-
-    function ModelClass() {
-      _classCallCheck(this, ModelClass);
-
-      return _possibleConstructorReturn(this, (ModelClass.__proto__ || _Object$getPrototypeOf(ModelClass)).apply(this, arguments));
-    }
-
-    return ModelClass;
-  }(ModelBase);
-  ModelClass.init(name, attributes);
-  return ModelClass;
-};
 
 /**
  * 定义模型
@@ -4904,7 +4881,19 @@ var Model$1 = function Model(name, attributes) {
 
 
 Model$1.define = function (name, attributes) {
-  return new Model$1(name, attributes);
+  var ModelClass = function (_Model) {
+    _inherits(ModelClass, _Model);
+
+    function ModelClass() {
+      _classCallCheck(this, ModelClass);
+
+      return _possibleConstructorReturn(this, (ModelClass.__proto__ || _Object$getPrototypeOf(ModelClass)).apply(this, arguments));
+    }
+
+    return ModelClass;
+  }(Model$1);
+  ModelClass.init(name, attributes);
+  return ModelClass;
 };
 
 /**
@@ -4915,18 +4904,18 @@ Model$1.define = function (name, attributes) {
 Model$1.use = function (plugin, options) {
   var installedPlugins = this._installedPlugins || (this._installedPlugins = []);
   if (installedPlugins.indexOf(plugin) > -1) {
-    return ModelBase;
+    return Model$1;
   }
 
   var args = _Array$from(arguments).slice(1);
-  args.unshift(ModelBase);
+  args.unshift(Model$1);
   if (typeof plugin.install === 'function') {
     plugin.install.apply(plugin, args);
   } else if (typeof plugin === 'function') {
     plugin.apply(null, args);
   }
   installedPlugins.push(plugin);
-  return ModelBase;
+  return Model$1;
 };
 
 return Model$1;

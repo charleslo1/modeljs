@@ -5,9 +5,9 @@ import isFunction from 'lodash/isFunction'
 import isPlainObject from 'lodash/isPlainObject'
 
 /**
- * 模型基类
+ * 模型类
  */
-class ModelBase {
+class Model {
   /**
    * 模型构造函数
    * @param  {Object} values 模型属性数据
@@ -245,24 +245,15 @@ class ModelBase {
 }
 
 /**
- * 模型类
- */
-class Model {
-  constructor (name, attributes) {
-    const ModelClass = class extends ModelBase {}
-    ModelClass.init(name, attributes)
-    return ModelClass
-  }
-}
-
-/**
  * 定义模型
  * @param  {String} name       模型名称
  * @param  {Object} attributes 模型定义对象
  * @return {Function}          模型类
  */
 Model.define = function (name, attributes) {
-  return new Model(name, attributes)
+  const ModelClass = class extends Model {}
+  ModelClass.init(name, attributes)
+  return ModelClass
 }
 
 /**
@@ -273,18 +264,18 @@ Model.define = function (name, attributes) {
 Model.use = function (plugin, options) {
   const installedPlugins = (this._installedPlugins || (this._installedPlugins = []))
   if (installedPlugins.indexOf(plugin) > -1) {
-    return ModelBase
+    return Model
   }
 
   const args = Array.from(arguments).slice(1)
-  args.unshift(ModelBase)
+  args.unshift(Model)
   if (typeof plugin.install === 'function') {
     plugin.install.apply(plugin, args)
   } else if (typeof plugin === 'function') {
     plugin.apply(null, args)
   }
   installedPlugins.push(plugin)
-  return ModelBase
+  return Model
 }
 
 // export
