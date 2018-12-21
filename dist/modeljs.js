@@ -1309,6 +1309,20 @@ exports.default = function (subClass, superClass) {
 
 var _inherits = unwrapExports(inherits);
 
+// 19.1.2.3 / 15.2.3.7 Object.defineProperties(O, Properties)
+_export(_export.S + _export.F * !_descriptors, 'Object', { defineProperties: _objectDps });
+
+var $Object$1 = _core.Object;
+var defineProperties$1 = function defineProperties(T, D) {
+  return $Object$1.defineProperties(T, D);
+};
+
+var defineProperties = createCommonjsModule(function (module) {
+module.exports = { "default": defineProperties$1, __esModule: true };
+});
+
+var _Object$defineProperties = unwrapExports(defineProperties);
+
 var classCallCheck = createCommonjsModule(function (module, exports) {
 "use strict";
 
@@ -1326,9 +1340,9 @@ var _classCallCheck = unwrapExports(classCallCheck);
 // 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
 _export(_export.S + _export.F * !_descriptors, 'Object', { defineProperty: _objectDp.f });
 
-var $Object$1 = _core.Object;
+var $Object$2 = _core.Object;
 var defineProperty$3 = function defineProperty(it, key, desc) {
-  return $Object$1.defineProperty(it, key, desc);
+  return $Object$2.defineProperty(it, key, desc);
 };
 
 var defineProperty$1 = createCommonjsModule(function (module) {
@@ -4599,8 +4613,8 @@ var ModelBase = function () {
     }
 
     /**
-     * 从 api 数据对象转换为模型对象
-     * @param  {Object} data api 数据对象
+     * 从api数据对象转换为模型对象
+     * @param  {Object} data api数据对象
      * @return {Model}      模型对象
      */
 
@@ -4623,8 +4637,8 @@ var ModelBase = function () {
     }
 
     /**
-     * 将模型对象转换为 api 数据对象
-     * @return {Object} api 数据对象
+     * 将模型对象转换为 api数据对象
+     * @return {Object}  api数据对象
      */
 
   }, {
@@ -4690,9 +4704,9 @@ var ModelBase = function () {
     }
 
     /**
-     * 从 api 数据创建模型数据
-     * @param  {Object} data api 数据
-     * @return {Model}      模型对象
+     * 从api数据创建模型数据
+     * @param  {Object} data api数据
+     * @return {Model}       模型对象
      */
 
   }, {
@@ -4708,8 +4722,26 @@ var ModelBase = function () {
     }
 
     /**
-     * 从 api 数据对象集合批量创建模型对象集合
-     * @param  {Array<Object>} data api 数据集合
+     * 将模型对象转换为 api数据对象
+     * @param  {Model}  model 模型对象
+     * @return {Object}       api数据对象
+     */
+
+  }, {
+    key: 'toData',
+    value: function toData() {
+      var model = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      if (Array.isArray(model)) {
+        return this.toDataSet(model);
+      }
+
+      return model.$modelize ? model.toData() : new this(model).toData();
+    }
+
+    /**
+     * 从api数据对象集合批量创建模型对象集合
+     * @param  {Array<Object>} data api数据集合
      * @return {Array<Model>}       模型对象集合
      */
 
@@ -4726,9 +4758,9 @@ var ModelBase = function () {
     }
 
     /**
-     * 将模型对象集合批量转换为 api 数据对象集合
+     * 将模型对象集合批量转换为 api数据对象集合
      * @param  {Array<Model>} models 模型对象集合
-     * @return {Array<Object>}       api 数据集合
+     * @return {Array<Object>}       api数据集合
      */
 
   }, {
@@ -4753,16 +4785,36 @@ var ModelBase = function () {
     value: function init(name, attributes) {
       var _this6 = this;
 
-      // 设置模型名称
-      Object.defineProperty(this, 'name', { value: name });
-      // 设置模型
+      // 属性定义对象
       this.attributes = mapValues_1$1(attributes, function (attribute, key) {
         return _this6.normalizeAttribute(attribute);
       });
+      // 属性默认值对象
       this.defaults = mapValues_1$1(attributes, function (attribute, key) {
         return attribute.default || attribute.defaultValue;
       });
-      this.modelize = true;
+
+      // 定义模型类属性
+      _Object$defineProperties(this, {
+        // 模型名称
+        name: {
+          value: name,
+          configurable: false,
+          enumerable: false,
+          writable: false
+        }
+      });
+
+      // 定义模型类原型属性
+      _Object$defineProperties(this.prototype, {
+        // 模型化属性
+        $modelize: {
+          value: true,
+          configurable: false,
+          enumerable: false,
+          writable: false
+        }
+      });
 
       return this;
     }

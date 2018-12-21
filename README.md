@@ -196,6 +196,8 @@ var model = ModelClass.fromData(data)
  * @return {Object} api 数据对象
  */
 var data = model.toData()
+// 等同于
+var data = ModelClass.toData(model)
 
 /**
  * 从 api 数据对象集合批量创建模型对象集合

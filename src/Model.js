@@ -59,8 +59,8 @@ class ModelBase {
   }
 
   /**
-   * 从 api 数据对象转换为模型对象
-   * @param  {Object} data api 数据对象
+   * 从api数据对象转换为模型对象
+   * @param  {Object} data api数据对象
    * @return {Model}      模型对象
    */
   fromData (data = {}) {
@@ -76,8 +76,8 @@ class ModelBase {
   }
 
   /**
-   * 将模型对象转换为 api 数据对象
-   * @return {Object} api 数据对象
+   * 将模型对象转换为 api数据对象
+   * @return {Object}  api数据对象
    */
   toData () {
     let data = {}
@@ -123,9 +123,9 @@ class ModelBase {
   }
 
   /**
-   * 从 api 数据创建模型数据
-   * @param  {Object} data api 数据
-   * @return {Model}      模型对象
+   * 从api数据创建模型数据
+   * @param  {Object} data api数据
+   * @return {Model}       模型对象
    */
   static fromData (data = {}) {
     if (Array.isArray(data)) {
@@ -136,8 +136,21 @@ class ModelBase {
   }
 
   /**
-   * 从 api 数据对象集合批量创建模型对象集合
-   * @param  {Array<Object>} data api 数据集合
+   * 将模型对象转换为 api数据对象
+   * @param  {Model}  model 模型对象
+   * @return {Object}       api数据对象
+   */
+  static toData (model = {}) {
+    if (Array.isArray(model)) {
+      return this.toDataSet(model)
+    }
+
+    return model.$modelize ? model.toData() : new this(model).toData()
+  }
+
+  /**
+   * 从api数据对象集合批量创建模型对象集合
+   * @param  {Array<Object>} data api数据集合
    * @return {Array<Model>}       模型对象集合
    */
   static fromDataSet (dataSet = []) {
@@ -145,9 +158,9 @@ class ModelBase {
   }
 
   /**
-   * 将模型对象集合批量转换为 api 数据对象集合
+   * 将模型对象集合批量转换为 api数据对象集合
    * @param  {Array<Model>} models 模型对象集合
-   * @return {Array<Object>}       api 数据集合
+   * @return {Array<Object>}       api数据集合
    */
   static toDataSet (models = []) {
     return models.map((model) => model.toData())
@@ -160,12 +173,32 @@ class ModelBase {
    * @return {[type]}            模型类
    */
   static init (name, attributes) {
-    // 设置模型名称
-    Object.defineProperty(this, 'name', { value: name })
-    // 设置模型
+    // 属性定义对象
     this.attributes = mapValues(attributes, (attribute, key) => this.normalizeAttribute(attribute))
+    // 属性默认值对象
     this.defaults = mapValues(attributes, (attribute, key) => (attribute.default || attribute.defaultValue))
-    this.modelize = true
+
+    // 定义模型类属性
+    Object.defineProperties(this, {
+      // 模型名称
+      name: {
+        value: name,
+        configurable: false,
+        enumerable: false,
+        writable: false
+      }
+    })
+
+    // 定义模型类原型属性
+    Object.defineProperties(this.prototype, {
+      // 模型化属性
+      $modelize: {
+        value: true,
+        configurable: false,
+        enumerable: false,
+        writable: false
+      }
+    })
 
     return this
   }
