@@ -132,15 +132,15 @@ await http.post('/user/save', data)
 
 // 批量反向映射
 var users = User.bulkCreate([{
-    uuid: 101,
+    id: 101,
     name: '张三',
-    company: { id: 1, name: '张三的公司' }
+    companyName: '张三的公司'
 }, {
     ...
 }])
 
 var data = User.toDataSet(users)
-// data 的结构：[{ uuid: 100, name: 'Charles Lo', company: { id: 1, name: 'XX公司' } }, ...]
+// data 的结构：[{ uuid: 100, name: 'Charles Lo', company: { name: 'XX公司' } }, ...]
 
 await http.post('/user/addlist', data)
 
