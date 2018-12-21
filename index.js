@@ -1,3 +1,3 @@
-import Model from './src/Model'
+const Model = require('./dist/modeljs')
 
-export default Model
+module.exports = Model

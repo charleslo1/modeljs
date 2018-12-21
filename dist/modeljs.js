@@ -706,6 +706,20 @@ module.exports = { "default": getPrototypeOf$1, __esModule: true };
 
 var _Object$getPrototypeOf = unwrapExports(getPrototypeOf);
 
+var classCallCheck = createCommonjsModule(function (module, exports) {
+"use strict";
+
+exports.__esModule = true;
+
+exports.default = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+});
+
+var _classCallCheck = unwrapExports(classCallCheck);
+
 var _addToUnscopables = function () { /* empty */ };
 
 var _iterStep = function (done, value) {
@@ -1322,20 +1336,6 @@ module.exports = { "default": defineProperties$1, __esModule: true };
 });
 
 var _Object$defineProperties = unwrapExports(defineProperties);
-
-var classCallCheck = createCommonjsModule(function (module, exports) {
-"use strict";
-
-exports.__esModule = true;
-
-exports.default = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-};
-});
-
-var _classCallCheck = unwrapExports(classCallCheck);
 
 // 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
 _export(_export.S + _export.F * !_descriptors, 'Object', { defineProperty: _objectDp.f });
@@ -4878,8 +4878,6 @@ var Model$1 = function () {
  * @param  {Object} attributes 模型定义对象
  * @return {Function}          模型类
  */
-
-
 Model$1.define = function (name, attributes) {
   var ModelClass = function (_Model) {
     _inherits(ModelClass, _Model);
