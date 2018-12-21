@@ -51,6 +51,14 @@ class ModelBase {
   }
 
   /**
+   * 克隆当前模型对象
+   * @return {Object}  克隆的新模型对象
+   */
+  clone () {
+    return this.constructor.clone(this)
+  }
+
+  /**
    * 从 api 数据对象转换为模型对象
    * @param  {Object} data api 数据对象
    * @return {Model}      模型对象
@@ -94,6 +102,15 @@ class ModelBase {
     }
 
     return new this(values)
+  }
+
+  /**
+   * 克隆模型对象
+   * @param  {Object} model 模型对象
+   * @return {Model}        新模型对象
+   */
+  static clone (model) {
+    return this.create(model)
   }
 
   /**
