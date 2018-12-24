@@ -26,7 +26,7 @@ class Model {
     const attributes = this.constructor.attributes
     mapValues(attributes, (attribute, name) => {
       let defaultValue = this.constructor.getDefaultValue(name)
-      let value = values[name] || defaultValue
+      let value = values[name] !== undefined ? values[name] : defaultValue
       this.set(name, value)
     })
   }
