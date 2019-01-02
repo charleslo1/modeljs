@@ -1424,9 +1424,9 @@ var root = _freeGlobal || freeSelf || Function('return this')();
 var _root = root;
 
 /** Built-in value references. */
-var Symbol = _root.Symbol;
+var Symbol$1 = _root.Symbol;
 
-var _Symbol = Symbol;
+var _Symbol = Symbol$1;
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -4472,6 +4472,54 @@ function mapValues(object, iteratee) {
 
 var mapValues_1$1 = mapValues;
 
+'use strict';
+// 19.1.2.1 Object.assign(target, source, ...)
+
+
+
+
+
+var $assign = Object.assign;
+
+// should work with symbols and should have deterministic property order (V8 bug)
+var _objectAssign = !$assign || _fails(function () {
+  var A = {};
+  var B = {};
+  // eslint-disable-next-line no-undef
+  var S = Symbol();
+  var K = 'abcdefghijklmnopqrst';
+  A[S] = 7;
+  K.split('').forEach(function (k) { B[k] = k; });
+  return $assign({}, A)[S] != 7 || Object.keys($assign({}, B)).join('') != K;
+}) ? function assign(target, source) { // eslint-disable-line no-unused-vars
+  var T = _toObject(target);
+  var aLen = arguments.length;
+  var index = 1;
+  var getSymbols = _objectGops.f;
+  var isEnum = _objectPie.f;
+  while (aLen > index) {
+    var S = _iobject(arguments[index++]);
+    var keys = getSymbols ? _objectKeys(S).concat(getSymbols(S)) : _objectKeys(S);
+    var length = keys.length;
+    var j = 0;
+    var key;
+    while (length > j) if (isEnum.call(S, key = keys[j++])) T[key] = S[key];
+  } return T;
+} : $assign;
+
+// 19.1.3.1 Object.assign(target, source)
+
+
+_export(_export.S + _export.F, 'Object', { assign: _objectAssign });
+
+var assign$1 = _core.Object.assign;
+
+var assign = createCommonjsModule(function (module) {
+module.exports = { "default": assign$1, __esModule: true };
+});
+
+var _Object$assign = unwrapExports(assign);
+
 /** Built-in value references. */
 var getPrototype = _overArg(Object.getPrototypeOf, Object);
 
@@ -4536,7 +4584,171 @@ function isPlainObject(value) {
 
 var isPlainObject_1$1 = isPlainObject;
 
+// 值类型列表
+var valueTypes = [String, Number, Boolean, null, undefined];
+
 /**
+ * 判断指定类型是否为值类型
+ * @param  {Any}  type  类型
+ * @return {Boolean}    是否为值类型
+ */
+var isValueType = function isValueType(type) {
+  return valueTypes.indexOf(type) >= 0;
+};
+
+/**
+ * 判断指定类型是否为模型类型
+ * @param  {Any}  type  类型
+ * @return {Boolean}    是否为模型类型
+ */
+var isModelType = function isModelType(Type) {
+  return Type && Type.prototype instanceof Model$1;
+};
+
+/**
+ * 判断指定类型是否为模型集合类型
+ * @param  {Any}  type  类型
+ * @return {Boolean}    是否为模型集合类型
+ */
+var isModelSetType = function isModelSetType(Type) {
+  return Array.isArray(Type) && isModelType(Type[0]);
+};
+
+/**
+ * 标准化值
+ * @param  {Any} value    值
+ * @param  {Any} Type     类型
+ * @return {Any}          标准化值
+ */
+var normolizeValue = function normolizeValue(value, Type) {
+  // 引用类型
+  if (isFunction_1$1(Type) && !isValueType(Type)) {
+    // 数组特殊处理
+    if (Type === Array) {
+      value = Array.isArray(value) ? value : [];
+    } else {
+      value = value ? new Type(value) : new Type();
+    }
+
+    // 特殊集合类型
+  } else if (Array.isArray(Type)) {
+    var ItemType = Type[0];
+    value = Array.isArray(value) ? value : [];
+    value = value.map(function (item) {
+      return normolizeValue(item, ItemType);
+    });
+
+    // 值类型
+  } else {
+    value = isFunction_1$1(Type) ? Type(value) : value;
+  }
+
+  return value;
+};
+
+/**
+ * Attribute
+ * 属性类
+ */
+
+var Attribute = function () {
+  /**
+   * 构造函数
+   * @param  {String} name    属性名
+   * @param  {Object} options 属性选项
+   */
+  function Attribute(name, options) {
+    _classCallCheck(this, Attribute);
+
+    var attribute = options;
+    if (!isPlainObject_1$1(options)) {
+      attribute = {
+        type: options
+      };
+    }
+
+    _Object$assign(this, {
+      name: '',
+      type: String,
+      default: undefined
+    }, attribute);
+  }
+
+  /**
+   * 计算默认值
+   * @return {Any} 默认值
+   */
+
+
+  _createClass(Attribute, [{
+    key: 'getDefaultValue',
+    value: function getDefaultValue() {
+      var defaultValue = this.default;
+
+      if (isFunction_1$1(defaultValue)) {
+        defaultValue = defaultValue();
+      }
+
+      return defaultValue;
+    }
+
+    /**
+     * 标准化属性值
+     * @param  {Any} value 值
+     * @return {Any}       标准化值
+     */
+
+  }, {
+    key: 'normolizeValue',
+    value: function normolizeValue$$1(value) {
+      // 如果为空则使用默认值
+      value = value === undefined ? this.getDefaultValue() : value;
+
+      // 标准化类型值
+      value = normolizeValue(value, this.type);
+
+      return value;
+    }
+
+    /**
+     * 标准化接口数据属性值
+     * @param  {Any} value 值
+     * @return {Any}       标准化值
+     */
+
+  }, {
+    key: 'normolizeDataValue',
+    value: function normolizeDataValue(value) {
+      var Type = this.type;
+
+      // 如果为空则使用默认值
+      if (value === undefined) {
+        value = this.getDefaultValue();
+        value = normolizeValue(value, Type);
+
+        // 如果为模型类则使用 fromData 转换
+      } else if (isModelType(Type)) {
+        value = Type.fromData(value);
+
+        // 如果为模型类集合则使用 fromData 转换
+      } else if (isModelSetType(Type)) {
+        var ItemType = Type[0];
+        value = ItemType.fromDataSet(value);
+
+        // 常规类型属性
+      } else {
+        value = normolizeValue(value, Type);
+      }
+
+      return value;
+    }
+  }]);
+
+  return Attribute;
+}();
+
+/**
+ * Model
  * 模型类
  */
 
@@ -4570,8 +4782,8 @@ var Model$1 = function () {
 
       var attributes = this.constructor.attributes;
       mapValues_1$1(attributes, function (attribute, name) {
-        var defaultValue = _this.constructor.getDefaultValue(name);
-        var value = values[name] || defaultValue;
+        var value = values[name];
+        value = attribute.normolizeValue(values[name]);
         _this.set(name, value);
       });
     }
@@ -4628,8 +4840,8 @@ var Model$1 = function () {
       var attributes = this.constructor.attributes;
       mapValues_1$1(attributes, function (attribute, name) {
         var path = attribute.field || name;
-        var defaultValue = _this2.constructor.getDefaultValue(name);
-        var value = get_1$1(data, path, defaultValue);
+        var value = get_1$1(data, path);
+        value = attribute.normolizeDataValue(value);
         _this2.set(name, value);
       });
 
@@ -4783,16 +4995,12 @@ var Model$1 = function () {
   }, {
     key: 'init',
     value: function init(name, attributes) {
-      var _this6 = this;
-
       // 属性定义对象
-      this.attributes = mapValues_1$1(attributes, function (attribute, key) {
-        return _this6.normalizeAttribute(attribute);
+      this.attributes = mapValues_1$1(attributes, function (attribute, name) {
+        return new Attribute(name, attribute);
       });
       // 属性默认值对象
-      this.defaults = mapValues_1$1(attributes, function (attribute, key) {
-        return attribute.default || attribute.defaultValue;
-      });
+      // this.defaults = mapValues(attributes, (attribute, name) => attribute.default)
 
       // 定义模型类属性
       _Object$defineProperties(this, {
@@ -4820,24 +5028,6 @@ var Model$1 = function () {
     }
 
     /**
-     * 标准化属性定义
-     * @param  {Object} attribute 属性定义对象
-     * @return {Object}           属性定义对象
-     */
-
-  }, {
-    key: 'normalizeAttribute',
-    value: function normalizeAttribute(attribute) {
-      if (!isPlainObject_1$1(attribute)) {
-        attribute = {
-          type: attribute
-        };
-      }
-
-      return attribute;
-    }
-
-    /**
      * 获取属性定义对象
      * @param  {String} name       属性名
      * @return {Object}            属性定义对象
@@ -4847,25 +5037,6 @@ var Model$1 = function () {
     key: 'getAttribute',
     value: function getAttribute(name) {
       return this.attributes[name];
-    }
-
-    /**
-     * 标准化属性定义
-     * @param  {String} name       属性名
-     * @return {Object}            属性定义对象
-     */
-
-  }, {
-    key: 'getDefaultValue',
-    value: function getDefaultValue(name) {
-      var attribute = this.getAttribute(name);
-      if (!attribute) return undefined;
-      var defaultValue = attribute.default !== undefined ? attribute.default : attribute.defaultValue;
-      if (isFunction_1$1(defaultValue)) {
-        defaultValue = defaultValue();
-      }
-
-      return defaultValue;
     }
   }]);
 

@@ -1,10 +1,10 @@
 import getValue from 'lodash/get'
 import setValue from 'lodash/set'
 import mapValues from 'lodash/mapValues'
-import isFunction from 'lodash/isFunction'
-import isPlainObject from 'lodash/isPlainObject'
+import Attribute from './Attribute'
 
 /**
+ * Model
  * 模型类
  */
 class Model {
@@ -25,8 +25,8 @@ class Model {
   _initValues (values = {}) {
     const attributes = this.constructor.attributes
     mapValues(attributes, (attribute, name) => {
-      let defaultValue = this.constructor.getDefaultValue(name)
-      let value = values[name] !== undefined ? values[name] : defaultValue
+      let value = values[name]
+      value = attribute.normolizeValue(values[name])
       this.set(name, value)
     })
   }
@@ -67,8 +67,8 @@ class Model {
     const attributes = this.constructor.attributes
     mapValues(attributes, (attribute, name) => {
       let path = attribute.field || name
-      let defaultValue = this.constructor.getDefaultValue(name)
-      let value = getValue(data, path, defaultValue)
+      let value = getValue(data, path)
+      value = attribute.normolizeDataValue(value)
       this.set(name, value)
     })
 
@@ -174,9 +174,9 @@ class Model {
    */
   static init (name, attributes) {
     // 属性定义对象
-    this.attributes = mapValues(attributes, (attribute, key) => this.normalizeAttribute(attribute))
+    this.attributes = mapValues(attributes, (attribute, name) => new Attribute(name, attribute))
     // 属性默认值对象
-    this.defaults = mapValues(attributes, (attribute, key) => (attribute.default || attribute.defaultValue))
+    // this.defaults = mapValues(attributes, (attribute, name) => attribute.default)
 
     // 定义模型类属性
     Object.defineProperties(this, {
@@ -204,43 +204,12 @@ class Model {
   }
 
   /**
-   * 标准化属性定义
-   * @param  {Object} attribute 属性定义对象
-   * @return {Object}           属性定义对象
-   */
-  static normalizeAttribute (attribute) {
-    if (!isPlainObject(attribute)) {
-      attribute = {
-        type: attribute
-      }
-    }
-
-    return attribute
-  }
-
-  /**
    * 获取属性定义对象
    * @param  {String} name       属性名
    * @return {Object}            属性定义对象
    */
   static getAttribute (name) {
     return this.attributes[name]
-  }
-
-  /**
-   * 标准化属性定义
-   * @param  {String} name       属性名
-   * @return {Object}            属性定义对象
-   */
-  static getDefaultValue (name) {
-    let attribute = this.getAttribute(name)
-    if (!attribute) return undefined
-    let defaultValue = attribute.default !== undefined ? attribute.default : attribute.defaultValue
-    if (isFunction(defaultValue)) {
-      defaultValue = defaultValue()
-    }
-
-    return defaultValue
   }
 }
 
