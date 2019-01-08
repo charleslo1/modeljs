@@ -15,8 +15,8 @@ const valueTypes = [
  * @param  {Any}  type  类型
  * @return {Boolean}    是否为值类型
  */
-export const isValueType = (type) => {
-  return valueTypes.indexOf(type) >= 0
+export const isValueType = (Type) => {
+  return valueTypes.indexOf(Type) >= 0
 }
 
 /**

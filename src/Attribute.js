@@ -1,6 +1,6 @@
 import isFunction from 'lodash/isFunction'
 import isPlainObject from 'lodash/isPlainObject'
-import { normolizeValue, isModelType, isModelSetType } from './util'
+import { normolizeValue, isValueType, isModelType, isModelSetType } from './util'
 
 /**
  * Attribute
@@ -70,11 +70,11 @@ class Attribute {
       value = normolizeValue(value, Type)
 
     // 如果为模型类则使用 fromData 转换
-    } else if (isModelType(Type)) {
+    } else if (this.isModelType()) {
       value = Type.fromData(value)
 
     // 如果为模型类集合则使用 fromData 转换
-    } else if (isModelSetType(Type)) {
+    } else if (this.isModelSetType()) {
       const ItemType = Type[0]
       value = ItemType.fromDataSet(value)
 
@@ -84,6 +84,24 @@ class Attribute {
     }
 
     return value
+  }
+
+  /**
+   * 是否为值类型
+   */
+  isValueType () {
+    return isValueType(this.type)
+  }
+
+  /**
+   * 是否为模型类型
+   */
+  isModelType () {
+    return isModelType(this.type)
+  }
+
+  isModelSetType () {
+    return isModelSetType(this.type)
   }
 }
 

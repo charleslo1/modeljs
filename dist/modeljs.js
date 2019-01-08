@@ -4592,8 +4592,8 @@ var valueTypes = [String, Number, Boolean, null, undefined];
  * @param  {Any}  type  类型
  * @return {Boolean}    是否为值类型
  */
-var isValueType = function isValueType(type) {
-  return valueTypes.indexOf(type) >= 0;
+var isValueType = function isValueType(Type) {
+  return valueTypes.indexOf(Type) >= 0;
 };
 
 /**
@@ -4727,11 +4727,11 @@ var Attribute = function () {
         value = normolizeValue(value, Type);
 
         // 如果为模型类则使用 fromData 转换
-      } else if (isModelType(Type)) {
+      } else if (this.isModelType()) {
         value = Type.fromData(value);
 
         // 如果为模型类集合则使用 fromData 转换
-      } else if (isModelSetType(Type)) {
+      } else if (this.isModelSetType()) {
         var ItemType = Type[0];
         value = ItemType.fromDataSet(value);
 
@@ -4741,6 +4741,31 @@ var Attribute = function () {
       }
 
       return value;
+    }
+
+    /**
+     * 是否为值类型
+     */
+
+  }, {
+    key: 'isValueType',
+    value: function isValueType$$1() {
+      return isValueType(this.type);
+    }
+
+    /**
+     * 是否为模型类型
+     */
+
+  }, {
+    key: 'isModelType',
+    value: function isModelType$$1() {
+      return isModelType(this.type);
+    }
+  }, {
+    key: 'isModelSetType',
+    value: function isModelSetType$$1() {
+      return isModelSetType(this.type);
     }
   }]);
 
@@ -4861,8 +4886,20 @@ var Model$1 = function () {
       var data = {};
       var attributes = this.constructor.attributes;
       mapValues_1$1(attributes, function (attribute, name) {
+        // 获取属性访问路径和值
         var path = attribute.field || name;
         var value = _this3.get(name);
+
+        // 模型对象：调用模型对象的 toData 方法获取值
+        if (attribute.isModelType() && value) {
+          value = value.toData();
+
+          // 模型集合：调用模型的 toDataSet 方法获取值
+        } else if (attribute.isModelSetType()) {
+          value = Model.toDataSet(value);
+        }
+
+        // 设置值
         set_1$1(data, path, value);
       });
 

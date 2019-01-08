@@ -83,8 +83,20 @@ class Model {
     let data = {}
     const attributes = this.constructor.attributes
     mapValues(attributes, (attribute, name) => {
+      // 获取属性访问路径和值
       let path = attribute.field || name
       let value = this.get(name)
+
+      // 模型对象：调用模型对象的 toData 方法获取值
+      if (attribute.isModelType() && value) {
+        value = value.toData()
+
+      // 模型集合：调用模型的 toDataSet 方法获取值
+      } else if (attribute.isModelSetType()) {
+        value = Model.toDataSet(value)
+      }
+
+      // 设置值
       setValue(data, path, value)
     })
 
