@@ -4727,11 +4727,11 @@ var Attribute = function () {
         value = normolizeValue(value, Type);
 
         // 如果为模型类则使用 fromData 转换
-      } else if (this.isModelType()) {
+      } else if (isModelType(Type)) {
         value = Type.fromData(value);
 
         // 如果为模型类集合则使用 fromData 转换
-      } else if (this.isModelSetType()) {
+      } else if (isModelSetType(Type)) {
         var ItemType = Type[0];
         value = ItemType.fromDataSet(value);
 
