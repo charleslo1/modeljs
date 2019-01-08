@@ -4640,7 +4640,7 @@ var normolizeValue = function normolizeValue(value, Type) {
 
     // 值类型
   } else {
-    value = isFunction_1$1(Type) ? Type(value) : value;
+    value = isFunction_1$1(Type) && value !== undefined ? Type(value) : value;
   }
 
   return value;
@@ -4668,7 +4668,7 @@ var Attribute = function () {
     }
 
     _Object$assign(this, {
-      name: '',
+      name: name,
       type: String,
       default: undefined
     }, attribute);

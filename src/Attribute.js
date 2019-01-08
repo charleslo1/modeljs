@@ -21,7 +21,7 @@ class Attribute {
     }
 
     Object.assign(this, {
-      name: '',
+      name: name,
       type: String,
       default: undefined
     }, attribute)
