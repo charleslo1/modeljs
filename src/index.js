@@ -1,4 +1,5 @@
 import Model from './Model'
+import isPlainObject from 'lodash/isPlainObject'
 
 /**
  * 定义模型
@@ -7,8 +8,19 @@ import Model from './Model'
  * @return {Function}          模型类
  */
 Model.define = function (name, attributes) {
+  // 继承 Model
   const ModelClass = class extends Model {}
+
+  // 判断是否需要声明为匿名模型类
+  if (isPlainObject(name)) {
+    attributes = name
+    name = 'AnonymousModel'
+  }
+
+  // 初始化模型类
   ModelClass.init(name, attributes)
+
+  // 返回
   return ModelClass
 }
 

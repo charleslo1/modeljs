@@ -5091,6 +5091,7 @@ var Model$1 = function () {
  * @return {Function}          模型类
  */
 Model$1.define = function (name, attributes) {
+  // 继承 Model
   var ModelClass = function (_Model) {
     _inherits(ModelClass, _Model);
 
@@ -5102,7 +5103,17 @@ Model$1.define = function (name, attributes) {
 
     return ModelClass;
   }(Model$1);
+
+  // 判断是否需要声明为匿名模型类
+  if (isPlainObject_1$1(name)) {
+    attributes = name;
+    name = 'AnonymousModel';
+  }
+
+  // 初始化模型类
   ModelClass.init(name, attributes);
+
+  // 返回
   return ModelClass;
 };
 
