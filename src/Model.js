@@ -64,6 +64,10 @@ class Model {
    * @return {Model}      模型对象
    */
   fromData (data = {}) {
+    // 排除空值和数组类型（后端可能返回的默认空对象）
+    if (!data || Array.isArray(data)) return this
+
+    // 映射属性值
     const attributes = this.constructor.attributes
     mapValues(attributes, (attribute, name) => {
       let path = attribute.field || name

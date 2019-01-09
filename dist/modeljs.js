@@ -4862,6 +4862,10 @@ var Model$1 = function () {
 
       var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
+      // 排除空值和数组类型（后端可能返回的默认空对象）
+      if (!data || Array.isArray(data)) return this;
+
+      // 映射属性值
       var attributes = this.constructor.attributes;
       mapValues_1$1(attributes, function (attribute, name) {
         var path = attribute.field || name;
