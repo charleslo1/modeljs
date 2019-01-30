@@ -62,7 +62,7 @@ User.prototype.load = async function () {
 
 User.prototype.save = async function () {
   let data = this.toData()
-  return await http.post(data)
+  return await http.post('/user/save', data)
 }
 
 export default User

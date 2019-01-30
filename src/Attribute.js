@@ -22,7 +22,7 @@ class Attribute {
 
     Object.assign(this, {
       name: name,
-      type: String,
+      type: undefined,
       default: undefined
     }, attribute)
   }
@@ -71,7 +71,7 @@ class Attribute {
 
     // 如果为模型类则使用 fromData 转换
     } else if (isModelType(Type)) {
-      value = Type.fromData(value)
+      value = new Type().fromData(value)
 
     // 如果为模型类集合则使用 fromData 转换
     } else if (isModelSetType(Type)) {
@@ -88,6 +88,7 @@ class Attribute {
 
   /**
    * 是否为值类型
+   * @return {Boolean} bool
    */
   isValueType () {
     return isValueType(this.type)
@@ -95,11 +96,16 @@ class Attribute {
 
   /**
    * 是否为模型类型
+   * @return {Boolean} bool
    */
   isModelType () {
     return isModelType(this.type)
   }
 
+  /**
+   * 是否为模型集合类型
+   * @return {Boolean} bool
+   */
   isModelSetType () {
     return isModelSetType(this.type)
   }

@@ -4669,7 +4669,7 @@ var Attribute = function () {
 
     _Object$assign(this, {
       name: name,
-      type: String,
+      type: undefined,
       default: undefined
     }, attribute);
   }
@@ -4728,7 +4728,7 @@ var Attribute = function () {
 
         // 如果为模型类则使用 fromData 转换
       } else if (isModelType(Type)) {
-        value = Type.fromData(value);
+        value = new Type().fromData(value);
 
         // 如果为模型类集合则使用 fromData 转换
       } else if (isModelSetType(Type)) {
@@ -4745,6 +4745,7 @@ var Attribute = function () {
 
     /**
      * 是否为值类型
+     * @return {Boolean} bool
      */
 
   }, {
@@ -4755,6 +4756,7 @@ var Attribute = function () {
 
     /**
      * 是否为模型类型
+     * @return {Boolean} bool
      */
 
   }, {
@@ -4762,6 +4764,12 @@ var Attribute = function () {
     value: function isModelType$$1() {
       return isModelType(this.type);
     }
+
+    /**
+     * 是否为模型集合类型
+     * @return {Boolean} bool
+     */
+
   }, {
     key: 'isModelSetType',
     value: function isModelSetType$$1() {
