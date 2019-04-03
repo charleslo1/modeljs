@@ -61,7 +61,7 @@ export const normolizeValue = (value, Type) => {
 
   // 值类型
   } else {
-    value = (isFunction(Type) && value !== undefined) ? Type(value) : value
+    value = (isFunction(Type) && value !== undefined && value !== null) ? Type(value) : value
   }
 
   return value
