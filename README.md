@@ -18,6 +18,7 @@ modeljs 是一个简单高效的 JS 数据模型定义库，可以帮助前端�
 # Featrues
 - [x] 轻松定义应用业务模型
 - [x] 支持后端接口数据双向映射
+- [x] 支持复杂模型嵌套（实例嵌套、数组嵌套）
 - [x] 支持集中化模型数据验证（[modeljs-validator](https://github.com/charleslo1/modeljs-validator) 插件）
 
 # Plugns
@@ -35,11 +36,11 @@ npm install modeljs-core --save
 import Model from 'modeljs-core'
 import http from 'axios'
 
-// 定义模型
+// ======== 定义模型 ========
 const User = Model.define('User', {
   id: {
     type: Number,
-    field: 'uuid'           // 接口字段映射
+    field: 'uuid'           // 接口字段映射（根据详情接口的数据结构关联字段）
     default: 0
   },
   name: {
@@ -48,12 +49,12 @@ const User = Model.define('User', {
   },
   companyName: {
     type: String,
-    field: 'company.name',   // 接口字段映射
+    field: 'company.name',   // 接口字段映射（根据详情接口的数据结构关联字段）
     default: ''
   }
 })
 
-// 可使用原型扩展自定义方法
+// ======== 可使用原型扩展自定义方法 ========
 User.prototype.load = async function () {
   let { data } = await http.get(`/user/${this.id}`)
   this.fromData(data)
@@ -72,7 +73,7 @@ export default User
 ``` js
 import User from './User'
 
-// 实例化
+// ======== 实例化 ========
 var user = new User({
     id: 100,
     name: 'Charles Lo',
@@ -83,7 +84,7 @@ console.log(user.id)            // 100
 console.log(user.name)          // Charles Lo
 console.log(user.companyName)   // XX公司
 
-// 使用自定义方法
+// ======== 使用自定义方法 ========
 var user = new User({ id: 101 })
 await user.load()
 console.log(user.name)          // 张三
@@ -101,7 +102,7 @@ import User from './User'
 // 实例化
 var user = new User()
 
-// 正向映射
+// ======== 正向映射 ========
 var { data } = await http.get('/user/101')
 // data 的结构：{ uuid: 101, name: '张三', company: { name: '张三的公司' } }
 
@@ -111,17 +112,17 @@ console.log(user.id)            // 101
 console.log(user.name)          // 张三
 console.log(user.companyName)   // 张三的公司
 
-// 批量正向映射
+// ======== 批量正向映射 ========
 var { data } = await http.get('/user/list')
 // data 的结构：[{ uuid: 101, name: '张三', company: { name: '张三的公司' } }, ...]
 
 var users = User.fromDataSet(data)
 
-console.log(users[0].id)            // 101
+console.log(users[0].id)           // 101
 console.log(user[0].name)          // 张三
 console.log(user[0].companyName)   // 张三的公司
 
-// 反向映射
+// ======== 反向映射 ========
 var user = new User({
     id: 101,
     name: '张三',
@@ -132,7 +133,7 @@ var data = user.toData()
 // data 的结构：{ uuid: 101, name: '张三', company: { name: '张三的公司' } }
 await http.post('/user/save', data)
 
-// 批量反向映射
+// ======== 批量反向映射 ========
 var users = User.bulkCreate([{
     id: 101,
     name: '张三',
@@ -145,6 +146,92 @@ var data = User.toDataSet(users)
 // data 的结构：[{ uuid: 100, name: 'Charles Lo', company: { name: 'XX公司' } }, ...]
 
 await http.post('/user/addlist', data)
+
+```
+
+##### 复杂模型嵌套
+``` js
+import Model from 'modeljs-core'
+import http from 'axios'
+
+// ======== 定义嵌套模型 ========
+// 定义公司模型
+const Company = Model.define('Company', {
+  id: {
+    type: Number,
+    default: 0
+  },
+  name: {
+    type: String,
+    default: ''
+  },
+  address: {
+    type: String,
+    default: ''
+  }
+})
+
+// 定义订单模型
+const Order = Model.define('Order', {
+  id: {
+    type: Number,
+    default: 0
+  },
+  productName: {
+    type: String,
+    field: 'product_name',    // 接口字段映射（根据详情接口的数据结构关联字段）
+    default: ''
+  },
+  createdTime: {
+    type: String,
+    field: 'created_time',    // 接口字段映射（根据详情接口的数据结构关联字段）
+    default: ''
+  }
+})
+
+// 定义客户模型
+const Customer = Model.define('Customer', {
+  id: {
+    type: Number,
+    default: 0
+  },
+  name: {
+    type: String,
+    default: ''
+  },
+  // 所属公司
+  company: {
+    type: Company,            // 模型实例嵌套，框架会自动调用引用的模型进行解析
+  },
+  // 订单列表
+  orders: {
+    type: Array(Order),       // 模型实例嵌套，框架会自动调用引用的模型进行解析
+    default: []
+  }
+})
+
+// ======== 使用嵌套模型 ========
+var { data1 } = await http.get('/customers/101')
+/*
+data1 的结构：
+{
+  id: 101,
+  name: '张三',
+  company: { id: 100, name: '张三的公司', address: '深圳'},
+  orders: [{id: 1, product_name: '伊利牛奶', created_time: '2019-12-25 13:48:26'}, ...]
+}
+*/
+
+// 将接口数据转换为模型实例
+var customer = new Customer().fromData(data1)
+console.log(customer.id)      // 101
+console.log(customer.name)    // 张三
+console.log(customer.company) // { uuid: 100, name: '张三的公司', address: '深圳'}
+console.log(customer.orders)  // [{id: 1, productName: '伊利牛奶', createdTime: '2019-12-25 13:48:26'}, ...]
+
+// 将模型实例转换为接口数据
+var data2 = customer.toData()
+// data2 的结构同 data1
 
 ```
 
