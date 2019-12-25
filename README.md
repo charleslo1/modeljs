@@ -205,7 +205,7 @@ const Customer = Model.define('Customer', {
   },
   // 订单列表
   orders: {
-    type: Array(Order),       // 模型实例嵌套，框架会自动调用引用的模型进行解析
+    type: Array(Order),       // 模型列表嵌套，框架会自动调用引用的模型进行解析
     default: []
   }
 })
