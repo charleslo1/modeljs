@@ -4627,16 +4627,15 @@ var isModelSetType = function isModelSetType(Type) {
  * @return {Any}          标准化值
  */
 var normolizeValue = function normolizeValue(value, Type) {
-  // 引用类型
-  if (isFunction_1$1(Type) && !isValueType(Type)) {
-    // 数组特殊处理
-    if (Type === Array) {
-      value = Array.isArray(value) ? value : [];
-    } else {
-      value = value ? new Type(value) : new Type();
-    }
+  // 数组类型：标准化数组值
+  if (Type === Array) {
+    value = Array.isArray(value) ? value : [];
 
-    // 特殊集合类型
+    // 自定义类型：实例化
+  } else if (isFunction_1$1(Type) && !isValueType(Type)) {
+    value = value ? new Type(value) : new Type();
+
+    // 自定义集合类型：循环标准化值
   } else if (Array.isArray(Type)) {
     var ItemType = Type[0];
     value = Array.isArray(value) ? value : [];
@@ -4644,7 +4643,7 @@ var normolizeValue = function normolizeValue(value, Type) {
       return normolizeValue(item, ItemType);
     });
 
-    // 值类型
+    // 值类型：进行类型转换
   } else {
     value = isFunction_1$1(Type) && value !== undefined && value !== null ? Type(value) : value;
   }
@@ -4661,18 +4660,31 @@ var Attribute = function () {
   /**
    * 构造函数
    * @param  {String} name    属性名
-   * @param  {Object} options 属性选项
+   * @param  {Object} options 属性选项（OR直接设置类型）
+   * @param  {Class}  ModelClass 模型类
    */
-  function Attribute(name, options) {
+  function Attribute(name, options, ModelClass) {
     _classCallCheck(this, Attribute);
 
     var attribute = options;
+
+    // 支持直接设置类型：{ name: String }
     if (!isPlainObject_1$1(options)) {
       attribute = {
         type: options
       };
     }
 
+    // 判断属性类型是不是有引用自身（type 值为 undefined 或 Array(undefined) 即视为引用了模型自身）
+    if (attribute.type === undefined) {
+      // 类型指向模型自身
+      attribute.type = ModelClass;
+    } else if (Array.isArray(attribute.type) && attribute.type[0] === undefined) {
+      // 类型指向模型自身数组
+      attribute.type = Array(ModelClass);
+    }
+
+    // 混合到属性实例
     _Object$assign(this, {
       name: name,
       type: undefined,
@@ -4736,7 +4748,7 @@ var Attribute = function () {
       } else if (isModelType(Type)) {
         value = new Type().fromData(value);
 
-        // 如果为模型类集合则使用 fromData 转换
+        // 如果为模型类集合则使用 fromDataSet 转换
       } else if (isModelSetType(Type)) {
         var ItemType = Type[0];
         value = ItemType.fromDataSet(value);
@@ -4795,7 +4807,6 @@ var Model$1 = function () {
   /**
    * 模型构造函数
    * @param  {Object} values 模型属性数据
-   * @return {[type]}        [description]
    */
   function Model() {
     var values = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -5043,16 +5054,18 @@ var Model$1 = function () {
     /**
      * 初始化模型类
      * @param  {String} name       模型类名称
-     * @param  {[type]} attributes 模型定义对象
-     * @return {[type]}            模型类
+     * @param  {Object} attributes 模型定义对象
+     * @return {Class}             模型类
      */
 
   }, {
     key: 'init',
     value: function init(name, attributes) {
+      var _this6 = this;
+
       // 属性定义对象
       this.attributes = mapValues_1$1(attributes, function (attribute, name) {
-        return new Attribute(name, attribute);
+        return new Attribute(name, attribute, _this6);
       });
       // 属性默认值对象
       // this.defaults = mapValues(attributes, (attribute, name) => attribute.default)

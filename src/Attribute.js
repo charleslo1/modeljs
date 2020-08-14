@@ -10,16 +10,29 @@ class Attribute {
   /**
    * 构造函数
    * @param  {String} name    属性名
-   * @param  {Object} options 属性选项
+   * @param  {Object} options 属性选项（OR直接设置类型）
+   * @param  {Class}  ModelClass 模型类
    */
-  constructor (name, options) {
+  constructor (name, options, ModelClass) {
     let attribute = options
+
+    // 支持直接设置类型：{ name: String }
     if (!isPlainObject(options)) {
       attribute = {
         type: options
       }
     }
 
+    // 判断属性类型是不是有引用自身（type 值为 undefined 或 Array(undefined) 即视为引用了模型自身）
+    if (attribute.type === undefined) {
+      // 类型指向模型自身
+      attribute.type = ModelClass
+    } else if (Array.isArray(attribute.type) && attribute.type[0] === undefined) {
+      // 类型指向模型自身数组
+      attribute.type = Array(ModelClass)
+    }
+
+    // 混合到属性实例
     Object.assign(this, {
       name: name,
       type: undefined,
@@ -73,7 +86,7 @@ class Attribute {
     } else if (isModelType(Type)) {
       value = new Type().fromData(value)
 
-    // 如果为模型类集合则使用 fromData 转换
+    // 如果为模型类集合则使用 fromDataSet 转换
     } else if (isModelSetType(Type)) {
       const ItemType = Type[0]
       value = ItemType.fromDataSet(value)

@@ -11,7 +11,6 @@ class Model {
   /**
    * 模型构造函数
    * @param  {Object} values 模型属性数据
-   * @return {[type]}        [description]
    */
   constructor (values = {}) {
     // 对象的实际值
@@ -185,12 +184,12 @@ class Model {
   /**
    * 初始化模型类
    * @param  {String} name       模型类名称
-   * @param  {[type]} attributes 模型定义对象
-   * @return {[type]}            模型类
+   * @param  {Object} attributes 模型定义对象
+   * @return {Class}             模型类
    */
   static init (name, attributes) {
     // 属性定义对象
-    this.attributes = mapValues(attributes, (attribute, name) => new Attribute(name, attribute))
+    this.attributes = mapValues(attributes, (attribute, name) => new Attribute(name, attribute, this))
     // 属性默认值对象
     // this.defaults = mapValues(attributes, (attribute, name) => attribute.default)
 

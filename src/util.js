@@ -44,22 +44,21 @@ export const isModelSetType = (Type) => {
  * @return {Any}          标准化值
  */
 export const normolizeValue = (value, Type) => {
-  // 引用类型
-  if (isFunction(Type) && !isValueType(Type)) {
-    // 数组特殊处理
-    if (Type === Array) {
-      value = Array.isArray(value) ? value : []
-    } else {
-      value = value ? new Type(value) : new Type()
-    }
+  // 数组类型：标准化数组值
+  if (Type === Array) {
+    value = Array.isArray(value) ? value : []
 
-  // 特殊集合类型
+  // 自定义类型：实例化
+  } else if (isFunction(Type) && !isValueType(Type)) {
+    value = value ? new Type(value) : new Type()
+
+  // 自定义集合类型：循环标准化值
   } else if (Array.isArray(Type)) {
     const ItemType = Type[0]
     value = Array.isArray(value) ? value : []
     value = value.map((item) => normolizeValue(item, ItemType))
 
-  // 值类型
+  // 值类型：进行类型转换
   } else {
     value = (isFunction(Type) && value !== undefined && value !== null) ? Type(value) : value
   }
